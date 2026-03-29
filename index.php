@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 use Agency56k\Template\Html56k\Site\Helper\ScssHelper;
 use Agency56k\Template\Html56k\Site\Helper\PerformanceHelper;
 use Agency56k\Template\Html56k\Site\Font\FontOptimizer;
+use Agency56k\Template\Html56k\Site\Asset\AssetOptimizer;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -66,16 +67,20 @@ ScssHelper::compile($params);
 // Font Optimizer — Preload font critici
 FontOptimizer::preload($this, $params);
 
-// Performance Pipeline — Registra post-processore HTML (lazy loading, ecc.)
+// Asset Pipeline — Disabilita asset Joomla non necessari
+AssetOptimizer::optimize($this, $params);
+
+// Performance Pipeline — Registra post-processore HTML (lazy loading, critical CSS, defer scripts)
 PerformanceHelper::register($params);
 
-// Caricamento Assets (Joomla 4/5/6 style)
-$version = ($params->get('mode') == 1) ? time() : '6.0.0';
-$wa->useAsset('template.main')->setAssetVersion($version);
-$wa->useAsset('template.responsive')
-   ->useAsset('template.js')
-   ->useAsset('template.plugins')
-   ->useAsset('template.custom');
+// Caricamento Assets (Joomla 6 WAM)
+$version = ($params->get('mode') == 1) ? time() : '6.3.0';
+$wa->useStyle('template.fonts');
+$wa->useStyle('template.main')->setAssetVersion($version);
+$wa->useStyle('template.responsive');
+$wa->useScript('template.js');
+$wa->useScript('template.plugins');
+$wa->useScript('template.custom');
 
 // Calcolo larghezze (BS5)
 $leftspan = 'col-md-3';

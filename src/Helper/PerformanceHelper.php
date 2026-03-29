@@ -14,6 +14,7 @@
  * Pipeline attiva:
  * 1. Critical CSS → inline CSS critico + async CSS completo
  * 2. Lazy Loading → loading="lazy" + fetchpriority="high" per LCP
+ * 3. Asset Defer  → forza defer su tutti gli script render-blocking
  */
 
 namespace Agency56k\Template\Html56k\Site\Helper;
@@ -23,6 +24,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Agency56k\Template\Html56k\Site\Performance\LazyLoader;
 use Agency56k\Template\Html56k\Site\CriticalCss\CriticalCssExtractor;
+use Agency56k\Template\Html56k\Site\Asset\AssetOptimizer;
 
 class PerformanceHelper
 {
@@ -80,6 +82,11 @@ class PerformanceHelper
         if ((int) $params->get('lazy_loading', 1) === 1) {
             $lazyLoader = new LazyLoader();
             $html       = $lazyLoader->process($html);
+        }
+
+        // Modulo 3: Asset Pipeline — Forza defer su tutti gli script
+        if ((int) $params->get('force_defer', 1) === 1) {
+            $html = AssetOptimizer::deferAllScripts($html);
         }
 
         // [Futuro] Modulo 5: Resource Hints

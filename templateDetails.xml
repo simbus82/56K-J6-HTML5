@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="template" client="site">
 	<name>Html56K</name>
-	<version>6.3.0</version>
+	<version>6.4.0</version>
 	<creationDate>March 2026</creationDate>
 	<author>56K Agency</author>
 	<authorEmail>assistenza@56k.agency</authorEmail>
@@ -131,6 +131,28 @@
 					min="0"
 					max="604800"
 				/>
+				<field
+					name="disable_fontawesome"
+					type="radio"
+					layout="joomla.form.field.radio.switcher"
+					label="TPL_HTML56K_DISABLE_FA_LABEL"
+					description="TPL_HTML56K_DISABLE_FA_DESC"
+					default="0"
+					>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+					name="force_defer"
+					type="radio"
+					layout="joomla.form.field.radio.switcher"
+					label="TPL_HTML56K_FORCE_DEFER_LABEL"
+					description="TPL_HTML56K_FORCE_DEFER_DESC"
+					default="1"
+					>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 			</fieldset>
 			
 			<fieldset name="customcode" label="TPL_HTML56K_FIELDSET_CUSTOMCODE_LABEL">

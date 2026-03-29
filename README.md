@@ -63,13 +63,19 @@ Il template supporta la compilazione automatica. All'interno delle impostazioni 
 - **Async CSS Loading**: I fogli di stile non critici vengono caricati con `media="print"` + `onload="this.media='all'"`.
 - **Cache per Tipo Pagina**: Cache separata per homepage, article, category-blog, category-list, default.
 
+### 6.4.0 (Marzo 2026)
+- **Asset Pipeline**: Ottimizzazione automatica del Web Asset Manager di Joomla 6.
+- **Force Defer**: Post-processore che forza `defer` su tutti gli script render-blocking.
+- **Disable Font Awesome**: Toggle admin per rimuovere Font Awesome dal frontend.
+- **Asset Loading**: Refactoring del caricamento asset con `useStyle()`/`useScript()` espliciti.
+
 ## Roadmap (Prossimi Sviluppi)
 
 I prossimi step per rendere **Html56K** un template state-of-the-art per le performance:
 
 - [x] **CriticalCSS Engine** — PHP puro, cache per tipo pagina, analisi DOM statica.
 - [x] **Font Optimizer** — Self-host, subset, preload, size-adjust fallback, zero CLS.
-- [ ] **Asset Pipeline** — Ottimizzazione del WAM di Joomla 6 con defer/async automatico e concatenazione intelligente.
+- [x] **Asset Pipeline** — Ottimizzazione del WAM di Joomla 6 con defer/async automatico e concatenazione intelligente.
 - [ ] **Image Pipeline** — Generazione WebP/AVIF on-the-fly e gestione della priorità LCP.
 - [x] **Lazy Loading** — `loading="lazy"` + `decoding="async"` + `fetchpriority="high"` per LCP.
 - [ ] **Resource Hints** — Autogenerazione di preconnect, dns-prefetch e preload.
