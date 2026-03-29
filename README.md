@@ -56,11 +56,18 @@ Il template supporta la compilazione automatica. All'interno delle impostazioni 
 - **LCP Priority**: La prima immagine grande riceve automaticamente `fetchpriority="high"`.
 - **Iframe Lazy**: Tutti gli iframe (YouTube, Maps, ecc.) ricevono `loading="lazy"`.
 
+### 6.3.0 (Marzo 2026)
+- **CriticalCSS Engine**: Estrazione automatica del CSS critico via analisi DOM statica, cache per tipo pagina.
+- **CSS Parser PHP**: Parser CSS leggero integrato, zero dipendenze esterne (no Composer).
+- **DOM Matcher**: Conversione CSS→XPath per matching selettori contro il DOM.
+- **Async CSS Loading**: I fogli di stile non critici vengono caricati con `media="print"` + `onload="this.media='all'"`.
+- **Cache per Tipo Pagina**: Cache separata per homepage, article, category-blog, category-list, default.
+
 ## Roadmap (Prossimi Sviluppi)
 
 I prossimi step per rendere **Html56K** un template state-of-the-art per le performance:
 
-- [ ] **CriticalCSS Engine** — PHP puro, cache per tipo pagina, analisi DOM statica.
+- [x] **CriticalCSS Engine** — PHP puro, cache per tipo pagina, analisi DOM statica.
 - [x] **Font Optimizer** — Self-host, subset, preload, size-adjust fallback, zero CLS.
 - [ ] **Asset Pipeline** — Ottimizzazione del WAM di Joomla 6 con defer/async automatico e concatenazione intelligente.
 - [ ] **Image Pipeline** — Generazione WebP/AVIF on-the-fly e gestione della priorità LCP.

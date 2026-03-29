@@ -10,6 +10,10 @@
  *
  * Registra un callback sull'evento onAfterRender di Joomla per
  * processare l'HTML finale con i vari ottimizzatori.
+ *
+ * Pipeline attiva:
+ * 1. Critical CSS → inline CSS critico + async CSS completo
+ * 2. Lazy Loading → loading="lazy" + fetchpriority="high" per LCP
  */
 
 namespace Agency56k\Template\Html56k\Site\Helper;
@@ -18,15 +22,12 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Agency56k\Template\Html56k\Site\Performance\LazyLoader;
+use Agency56k\Template\Html56k\Site\CriticalCss\CriticalCssExtractor;
 
 class PerformanceHelper
 {
     /**
      * Registra il post-processore HTML sull'evento onAfterRender.
-     *
-     * Deve essere chiamato dall'index.php del template.
-     * I moduli verranno eseguiti dopo che Joomla ha assemblato
-     * l'intero output HTML della pagina.
      *
      * @param   \Joomla\Registry\Registry  $params  I parametri del template
      *
@@ -36,12 +37,10 @@ class PerformanceHelper
     {
         $app = Factory::getApplication();
 
-        // Solo frontend
         if (!$app->isClient('site')) {
             return;
         }
 
-        // Registra il listener sull'evento onAfterRender
         $app->registerEvent('onAfterRender', function () use ($params) {
             self::processOutput($params);
         });
@@ -49,6 +48,10 @@ class PerformanceHelper
 
     /**
      * Processa l'output HTML finale applicando i moduli di performance attivi.
+     *
+     * L'ordine è importante:
+     * 1. Critical CSS → Deve agire PRIMA del lazy loading perché modifica i <link>
+     * 2. Lazy Loading → Aggiunge attributi alle <img> e <iframe>
      *
      * @param   \Joomla\Registry\Registry  $params  I parametri del template
      *
@@ -63,21 +66,68 @@ class PerformanceHelper
             return;
         }
 
+        // Modulo 1: Critical CSS Engine
+        if ((int) $params->get('critical_css', 0) === 1) {
+            $cachePath     = JPATH_THEMES . '/html56k/cache/critical-css';
+            $cacheLifetime = (int) $params->get('critical_css_lifetime', 86400);
+            $pageType      = self::detectPageType();
+
+            $extractor = new CriticalCssExtractor($cachePath, $cacheLifetime);
+            $html      = $extractor->process($html, $pageType);
+        }
+
         // Modulo 8: Lazy Loading Intelligente
         if ((int) $params->get('lazy_loading', 1) === 1) {
             $lazyLoader = new LazyLoader();
-            $html = $lazyLoader->process($html);
+            $html       = $lazyLoader->process($html);
         }
 
-        // [Futuro] Modulo 1: Critical CSS Engine
-        // if ((int) $params->get('critical_css', 0) === 1) { ... }
-
         // [Futuro] Modulo 5: Resource Hints
-        // if ((int) $params->get('resource_hints', 0) === 1) { ... }
-
         // [Futuro] Modulo 6: HTML Minification
-        // if ((int) $params->get('html_minify', 0) === 1) { ... }
 
         $app->setBody($html);
+    }
+
+    /**
+     * Rileva il tipo di pagina Joomla corrente.
+     *
+     * Usato per generare chiavi di cache specifiche per tipo pagina
+     * nel Critical CSS Engine.
+     *
+     * @return  string  Tipo di pagina: 'homepage', 'article', 'category-blog', 'category-list', 'default'
+     */
+    private static function detectPageType(): string
+    {
+        $app    = Factory::getApplication();
+        $option = $app->input->get('option', '');
+        $view   = $app->input->get('view', '');
+        $layout = $app->input->get('layout', '');
+
+        // Homepage
+        $menu        = $app->getMenu();
+        $defaultItem = $menu->getDefault();
+        $activeItem  = $menu->getActive();
+
+        if ($activeItem && $defaultItem && $activeItem->id === $defaultItem->id) {
+            return 'homepage';
+        }
+
+        // Article
+        if ($option === 'com_content' && $view === 'article') {
+            return 'article';
+        }
+
+        // Category blog
+        if ($option === 'com_content' && $view === 'category' && $layout === 'blog') {
+            return 'category-blog';
+        }
+
+        // Category list
+        if ($option === 'com_content' && $view === 'category') {
+            return 'category-list';
+        }
+
+        // Generico
+        return 'default';
     }
 }
