@@ -12,6 +12,8 @@ namespace Agency56k\Template\Html56k\Site;
 defined('_JEXEC') or die;
 
 use Agency56k\Template\Html56k\Site\Helper\ScssHelper;
+use Agency56k\Template\Html56k\Site\Helper\PerformanceHelper;
+use Agency56k\Template\Html56k\Site\Font\FontOptimizer;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -60,6 +62,12 @@ $bodyclass = 'site ' . $option . ' view-' . $view
 
 // Compilazione SCSS (sviluppo/produzione)
 ScssHelper::compile($params);
+
+// Font Optimizer — Preload font critici
+FontOptimizer::preload($this, $params);
+
+// Performance Pipeline — Registra post-processore HTML (lazy loading, ecc.)
+PerformanceHelper::register($params);
 
 // Caricamento Assets (Joomla 4/5/6 style)
 $version = ($params->get('mode') == 1) ? time() : '6.0.0';

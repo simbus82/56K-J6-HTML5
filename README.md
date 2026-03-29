@@ -43,14 +43,28 @@ Il template supporta la compilazione automatica. All'interno delle impostazioni 
 - **Libreria SCSS**: Inserimento compiler `scssphp` v1.13.0.
 - **Cleanup**: Rimozione totale del codice legacy di Joomla 3.
 
+### 6.1.0 (Marzo 2026)
+- **Font Optimizer**: Font self-hosted WOFF2 con fallback calibrato (`size-adjust`) per zero CLS.
+- **Preload Font**: Tag `<link rel="preload">` automatici per i font critici, attivabile da admin.
+- **Asset Fonts**: Nuovo asset `template.fonts` nel Web Asset Manager con `css/fonts.css`.
+- **Pulizia Legacy**: Rimozione `package/`, `build/bump.php`, `.travis.yml`.
+- **Build Script**: Nuovo `build/build_zip.php` per generare pacchetto di installazione.
+
+### 6.2.0 (Marzo 2026)
+- **Lazy Loading Intelligente**: Post-processore HTML con gestione automatica della priorità LCP.
+- **Performance Pipeline**: Nuovo `PerformanceHelper` come orchestratore dei moduli di performance su `onAfterRender`.
+- **LCP Priority**: La prima immagine grande riceve automaticamente `fetchpriority="high"`.
+- **Iframe Lazy**: Tutti gli iframe (YouTube, Maps, ecc.) ricevono `loading="lazy"`.
+
 ## Roadmap (Prossimi Sviluppi)
 
 I prossimi step per rendere **Html56K** un template state-of-the-art per le performance:
 
 - [ ] **CriticalCSS Engine** — PHP puro, cache per tipo pagina, analisi DOM statica.
-- [ ] **Font Optimizer** — Self-host, subset, preload, size-adjust fallback, zero CLS.
+- [x] **Font Optimizer** — Self-host, subset, preload, size-adjust fallback, zero CLS.
 - [ ] **Asset Pipeline** — Ottimizzazione del WAM di Joomla 6 con defer/async automatico e concatenazione intelligente.
-- [ ] **Image Pipeline** — Generazione WebP/AVIF on-the-fly, lazy loading smart e gestione della priorità LCP.
+- [ ] **Image Pipeline** — Generazione WebP/AVIF on-the-fly e gestione della priorità LCP.
+- [x] **Lazy Loading** — `loading="lazy"` + `decoding="async"` + `fetchpriority="high"` per LCP.
 - [ ] **Resource Hints** — Autogenerazione di preconnect, dns-prefetch e preload.
 - [ ] **Service Worker** — Cache shell opzionale per la navigazione offline e velocizzazione.
 - [ ] **HTML Minification** — Rimozione spazi e commenti nell'output finale (tramite evento `onAfterRender`).

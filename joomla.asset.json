@@ -1,15 +1,21 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-asset/1.0/joomla-asset.schema.json",
   "name": "template.html56k",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "Html56K Template Assets",
   "assets": [
+    {
+      "name": "template.fonts",
+      "type": "style",
+      "uri": "css/fonts.css",
+      "version": "1.0.0"
+    },
     {
       "name": "template.main",
       "type": "style",
       "uri": "css/template.css",
       "dependencies": [
-        "fontawesome",
+        "template.fonts",
         "bootstrap.css"
       ]
     },

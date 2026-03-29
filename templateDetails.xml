@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="template" client="site">
 	<name>Html56K</name>
-	<version>6.0.0</version>
+	<version>6.2.0</version>
 	<creationDate>March 2026</creationDate>
 	<author>56K Agency</author>
 	<authorEmail>assistenza@56k.agency</authorEmail>
@@ -17,7 +17,9 @@
 		<folder>js</folder>		
 		<folder>language</folder>
 		<folder>scss</folder>
+		<folder>fonts</folder>
 		<folder>libraries</folder>
+		<folder>src</folder>
 		<filename>index.php</filename>
 		<filename>template.php</filename>
 		<filename>error.php</filename>
@@ -85,6 +87,28 @@
 					description="TPL_HTML56K_SHOWCOMPONENT_DESC">
 					<option value="1">JYES</option>
 					<option	value="0">JNO</option>
+				</field>
+				<field
+					name="font_preload"
+					type="radio"
+					layout="joomla.form.field.radio.switcher"
+					label="TPL_HTML56K_FONT_PRELOAD_LABEL"
+					description="TPL_HTML56K_FONT_PRELOAD_DESC"
+					default="1"
+					>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+					name="lazy_loading"
+					type="radio"
+					layout="joomla.form.field.radio.switcher"
+					label="TPL_HTML56K_LAZY_LOADING_LABEL"
+					description="TPL_HTML56K_LAZY_LOADING_DESC"
+					default="1"
+					>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
 				</field>
 			</fieldset>
 			

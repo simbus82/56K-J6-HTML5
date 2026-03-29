@@ -1,0 +1,113 @@
+/*
+ * ============================================
+ * Html56K — FONT STACK OTTIMIZZATO
+ * ============================================
+ *
+ * Strategia:
+ * 1. Font variabile self-hosted + subset Latin
+ * 2. font-display: swap (mostra testo subito con fallback, poi swappa)
+ * 3. Fallback calibrato con size-adjust per minimizzare CLS
+ * 4. unicode-range per caricare solo i glifi necessari
+ *
+ * Per generare i valori di calibrazione del fallback, utilizzare:
+ *   https://screenspan.net/fallback
+ *   https://seek-oss.github.io/capsize/
+ *
+ * Per creare subset dei font:
+ *   pip install fonttools brotli
+ *   pyftsubset Font.ttf --output-file=font-latin.woff2 --flavor=woff2 \
+ *     --unicodes="U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
+ */
+
+/* ============================================
+   FALLBACK CALIBRATO (elimina CLS)
+   Queste metriche matchano Inter per evitare
+   layout shift durante il font swap.
+   ============================================ */
+@font-face {
+    font-family: 'BodyFallback';
+    src: local('Arial'), local('Helvetica Neue'), local('Helvetica');
+    size-adjust: 107.64%;
+    ascent-override: 90%;
+    descent-override: 22.43%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'HeadingFallback';
+    src: local('Georgia'), local('Times New Roman');
+    size-adjust: 105.2%;
+    ascent-override: 95%;
+    descent-override: 23%;
+    line-gap-override: 0%;
+}
+
+/* ============================================
+   FONT PRINCIPALE — Body (Inter Variable)
+   File: fonts/inter-latin-var.woff2
+   ============================================ */
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/inter-latin-var.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC,
+                   U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+                   U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+                   U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Italic separato (se necessario) */
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/inter-latin-var-italic.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC,
+                   U+2000-206F, U+20AC;
+}
+
+/* ============================================
+   FONT HEADING (opzionale, se diverso dal body)
+   File: fonts/heading-latin.woff2
+   ============================================ */
+@font-face {
+    font-family: 'Heading';
+    src: url('../fonts/heading-latin.woff2') format('woff2');
+    font-weight: 600 800;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC,
+                   U+2000-206F, U+20AC;
+}
+
+/* ============================================
+   CUSTOM PROPERTIES (Design Tokens)
+   ============================================ */
+:root {
+    --font-body: 'Inter', 'BodyFallback', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Heading', 'HeadingFallback', Georgia, serif;
+    --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+}
+
+/* ============================================
+   APPLICAZIONE
+   ============================================ */
+body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+code, pre, kbd, samp {
+    font-family: var(--font-mono);
+}
