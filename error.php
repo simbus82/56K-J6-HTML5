@@ -1,37 +1,56 @@
 <?php
 /**
- * @package      Qhtml5
- * @subpackage   Templates.qhtml5
- * @author       Quantility
- * @copyright    Copyright (C) 2017. All rights reserved.
+ * @package      Html56K
+ * @subpackage   Templates.Html56k
+ * @author       56K Agency
+ * @copyright    Copyright (C) 2026. All rights reserved.
  * @license      GNU General Public License version 2 or later; see LICENSE.txt
  */
-// no direct access
+
+namespace Agency56k\Template\Html56k\Site;
+
 defined('_JEXEC') or die;
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
+
+/** @var \Joomla\CMS\Document\ErrorDocument $this */
+
 http_response_code(404);
 
-$app			= JFactory::getApplication();
-$config         = JFactory::getConfig();
-$langTag 		= JFactory::getLanguage()->getTag();
+$app            = Factory::getApplication();
+$config         = Factory::getConfig();
+$langTag        = Factory::getLanguage()->getTag();
+$params         = $this->params;
+$notfound_alias = $params->get('notfound_alias');
 
-$params 		= $app->getTemplate(true)->params;
-$notfound_alias	= $params->get('notfound_alias');
+$langUrl = substr($langTag, 0, -3);
+$file    = Uri::root() . $langUrl . '/' . $notfound_alias;
 
-$langUrl 		= substr($langTag, 0, -3);
-$file 			= JURI::root().$langUrl.'/'.$notfound_alias;
+$arrContextOpt = [
+    "ssl" => [
+        "verify_peer"      => false,
+        "verify_peer_name" => false
+    ]
+];
 
-$file_headers 	= get_headers($file);
-
-$arrContextOpt  = array( "ssl" => array( "verify_peer" => false, "verify_peer_name" => false ));
-
-// joomla don't cal this error.php file when is offline, but i think is a bug... so...
-if( $config->get( 'offline' ) == 1 ) {
-    echo "Website is in Offline Mode: custome error 404 page works only in Online Mode";
+if ($config->get('offline') == 1) {
+    echo "Website is in Offline Mode: custom error 404 page works only in Online Mode";
 } else {
-    if( (strpos($file_headers[0], '404') !== false) OR (strpos($file_headers[0], '508') !== false) OR empty($notfound_alias) == true ){
-        echo "Error 404 Page not Found";
+    if (empty($notfound_alias)) {
+        echo "Error 404 - Page Not Found";
     } else {
-        echo file_get_contents($file, false, stream_context_create($arrContextOpt));
+        $file_headers = @get_headers($file);
+        if ($file_headers && (strpos($file_headers[0], '404') !== false || strpos($file_headers[0], '508') !== false)) {
+            echo "Error 404 - Page defined in settings not found";
+        } else {
+            $content = @file_get_contents($file, false, stream_context_create($arrContextOpt));
+            if ($content) {
+                echo $content;
+            } else {
+                echo "Error 404 - Page Not Found";
+            }
+        }
     }
 }
 ?>

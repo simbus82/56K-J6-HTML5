@@ -1,22 +1,26 @@
 <?php
 /**
- * @package      Qhtml5
- * @subpackage   Templates.qhtml5
- * @author       Quantility
- * @copyright    Copyright (C) 2019. All rights reserved.
+ * @package      Html56K
+ * @subpackage   Templates.Html56k
+ * @author       56K Agency
+ * @copyright    Copyright (C) 2026. All rights reserved.
  * @license      GNU General Public License version 2 or later; see LICENSE.txt
  */
-// no direct access
+
+namespace Agency56k\Template\Html56k\Site;
+
 defined('_JEXEC') or die;
 
+use Agency56k\Template\Html56k\Site\Helper\ScssHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 
-// Caricamento classi da helpers/qhtml5.php
-JLoader::import('qhtml5.helpers.qhtml5', JPATH_THEMES);
+/** @var \Joomla\CMS\Document\HtmlDocument $this */
 
-//Inizializzo le variabili per Joomla
-$app             = JFactory::getApplication();
-$user            = JFactory::getUser();
+$app             = Factory::getApplication();
+$wa              = $this->getWebAssetManager();
 
 // Output come HTML5
 $this->setHtml5(true);
@@ -24,13 +28,13 @@ $this->setHtml5(true);
 // Disabilita Generator
 $this->setGenerator(null);
 
-//Imposta Meta
+// Meta viewport
 $this->setMetaData('viewport', 'width=device-width,initial-scale=1');
 
-// Inizializzo i paramentri dalla configurazione del template
-$params = $app->getTemplate(true)->params;
+// Parametri template
+$params = $this->params;
 
-// Controllo le variabili attive (POST e GET) - Come su template Protostar
+// Variabili attive
 $option   = $app->input->getCmd('option', '');
 $view     = $app->input->getCmd('view', '');
 $layout   = $app->input->getCmd('layout', '');
@@ -38,122 +42,84 @@ $task     = $app->input->getCmd('task', '');
 $itemid   = $app->input->getCmd('Itemid', '');
 $sitename = $app->get('sitename');
 
-// Variabili di QHTML5
-$itemidMenu		= JRequest::getVar('Itemid');
-$menu			= $app->getMenu()->getActive();
-$active			= $app->getMenu()->getItem($itemidMenu);
-$pageclass		= '';
-$contentwidth   = '';
+// Menu attivo
+$menu      = $app->getMenu()->getActive();
+$pageclass = '';
+
 if (is_object($menu)) {
     $pageclass = $menu->params->get('pageclass_sfx');
 }
-$qhtml5_bs4_grid_min	= 'templates/' . $this->template . '/css/bootstrap4/bootstrap-grid.min.css';
-$qhtml5_bs4_grid		= 'templates/' . $this->template . '/css/bootstrap4/bootstrap-grid.css';
-$qhtml5_template		= 'templates/' . $this->template . '/css/template.css';
-$qhtml5_magento			= 'templates/' . $this->template . '/css/magento.css';
-$qhtml5_responsive		= 'templates/' . $this->template . '/css/responsive.css';
-$qhtml5_customjs		= 'templates/' . $this->template . '/js/custom.js';
 
-// array di classi per il body
-$bodyclass =	'site ' . $option . ' view-' . $view
-		. ($layout ? ' layout-' . $layout : ' no-layout')
-		. ($task ? ' task-' . $task : ' no-task')
-		. ($itemid ? ' itemid-' . $itemid : '')
-		. ($pageclass ? $pageclass : '')
-		. ($this->direction === 'rtl' ? ' rtl' : '');
+// Body class
+$bodyclass = 'site ' . $option . ' view-' . $view
+    . ($layout ? ' layout-' . $layout : ' no-layout')
+    . ($task ? ' task-' . $task : ' no-task')
+    . ($itemid ? ' itemid-' . $itemid : '')
+    . ($pageclass ? ' ' . $pageclass : '')
+    . ($this->direction === 'rtl' ? ' rtl' : '');
 
-// ---------- caricamento CSS Styles ---------------- //
-if ($params->get('bootstrapcss') == '1') {
-    HTMLHelper::_('stylesheet', 'media/jui/css/bootstrap.min.css', false, false);
-    HTMLHelper::_('bootstrap.loadCss', false, $this->direction);
-} else if ($params->get('bootstrapcss') == '2') {
-    HTMLHelper::_('stylesheet', 'media/jui/css/bootstrap.min.css', false, false);
-    HTMLHelper::_('stylesheet', 'media/jui/css/bootstrap-responsive.min.css', false, false);
-    HTMLHelper::_('bootstrap.loadCss', false, $this->direction);
-} else if ($params->get('bootstrapcss') == '3') {
-    HTMLHelper::_('stylesheet', 'media/jui/css/bootstrap.min.css', false, false);
-    HTMLHelper::_('stylesheet', 'media/jui/css/bootstrap-responsive.min.css', false, false);
-    HTMLHelper::_('stylesheet', 'media/jui/css/bootstrap-extended.css', false, false);
-    HTMLHelper::_('bootstrap.loadCss', false, $this->direction);
-}
-if ($params->get('bootstrapcss4grid') == '1') {
-	if(file_exists($qhtml5_bs4_grid_min)){
-		HTMLHelper::_('stylesheet', $qhtml5_bs4_grid_min, false, false);
-	} else if(file_exists($qhtml5_bs4_grid)){
-		HTMLHelper::_('stylesheet', $qhtml5_bs4_grid, false, false);
-	}
-}
-if(file_exists($qhtml5_template)){
-	HTMLHelper::_('stylesheet', $qhtml5_template, false, false);
-}
-if(file_exists($qhtml5_magento)){
-	HTMLHelper::_('stylesheet', $qhtml5_magento, false, false);
-}
-if(file_exists($qhtml5_responsive)){
-	HTMLHelper::_('stylesheet', $qhtml5_responsive, false, false);
-}
-// -------------------------------------------------- //
+// Compilazione SCSS (sviluppo/produzione)
+ScssHelper::compile($params);
 
-// ---------- caricamento JS Scripts ---------------- //
-// Caricamento jquery UI core o sortable
-if($params->get('jquery') == 1):
-	HTMLHelper::_('jquery.framework');
-endif;
-if($params->get('jqueryui') == 1):
-	HTMLHelper::_('jquery.ui', array('core', 'sortable'));
-endif;
-if ($params->get('bootstrap') == '1') {
-	HTMLHelper::_('bootstrap.framework');
-} else if ($params->get('bootstrap') == '2') {
-	// Bootstrap Custom
-} 
-// Add template js
-HTMLHelper::_('script', 'template.js', array('version' => 'auto', 'relative' => true));
-// -------------------------------------------------- //
+// Caricamento Assets (Joomla 4/5/6 style)
+$version = ($params->get('mode') == 1) ? time() : '6.0.0';
+$wa->useAsset('template.main')->setAssetVersion($version);
+$wa->useAsset('template.responsive')
+   ->useAsset('template.js')
+   ->useAsset('template.plugins')
+   ->useAsset('template.custom');
 
-// ---------- calcoli template ---------------------- //
-//span per left e right: dimensioni fisse per migliore user interface span3 | span6 | span3
-if ($this -> countModules('left')) {
-	$leftspan = 'span3';
+// Calcolo larghezze (BS5)
+$leftspan = 'col-md-3';
+$rightspan = 'col-md-3';
+$contentwidth = 'col-md-12';
+
+if ($this->countModules('left') && $this->countModules('right')) {
+    $contentwidth = 'col-md-6';
+} elseif ($this->countModules('left') || $this->countModules('right')) {
+    $contentwidth = 'col-md-9';
 }
-if ($this -> countModules('right')) {
-	$rightspan = 'span3';
-}
-if ($this -> countModules('left or right')) {
-	$contentwidth = "span9";
-	if ($this -> countModules('left and right')) {
-		$contentwidth = "span6";
-	} 	
-} else {
-	$contentwidth = "span12";
-}
-// -------------------------------------------------- //
+
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
-    <?php if ($params->get('after_head_open')) echo "<!-- after_head_open start -->"."\r\n".$params->get('after_head_open')."\r\n"."<!-- after_head_open end -->"."\r\n"; ?>
-    <?php if ($params->get('favicon_code')) echo "<!-- favicon_code start -->"."\r\n".$params->get('favicon_code')."\r\n"."<!-- favicon_code end -->"."\r\n";?>
-<!-- Head Start -->
-	<jdoc:include type="head" />
-<!-- Head End -->
-<!-- Extra Styles Start -->
-<!-- Extra Styles End -->
-<!-- Extra Scripts Start -->
-<!-- Extra Scripts End -->
-	<?php if ($this->countModules('head')): ?><jdoc:include type="modules" name="head" style="raw" /><?php endif; ?>
-	<?php if ($params->get('before_head_close')) echo "<!-- before_head_close start -->"."\r\n".$params->get('before_head_close')."\r\n"."<!-- before_head_close end -->"."\r\n"; ?>
+    <?php if ($params->get('after_head_open')) : ?>
+        <?php echo $params->get('after_head_open'); ?>
+    <?php endif; ?>
+    
+    <?php if ($params->get('favicon_code')) : ?>
+        <?php echo $params->get('favicon_code'); ?>
+    <?php endif; ?>
+
+    <jdoc:include type="head" />
+    
+    <?php if ($this->countModules('head')) : ?>
+        <jdoc:include type="modules" name="head" style="raw" />
+    <?php endif; ?>
+
+    <?php if ($params->get('before_head_close')) : ?>
+        <?php echo $params->get('before_head_close'); ?>
+    <?php endif; ?>
 </head>
 <body class="<?php echo $bodyclass; ?>">
-	<?php if ($params->get('after_body_open')) echo "<!-- after_body_open start -->"."\r\n".$params->get('after_body_open')."\r\n"."<!-- after_body_open end -->"."\r\n"; ?>
-	<?php if ($params->get('browserupgrade') == '1') : ?>
-		<?php include 'includes/browserupgrade.php'; ?>
+    <?php if ($params->get('after_body_open')) : ?>
+        <?php echo $params->get('after_body_open'); ?>
     <?php endif; ?>
-	<?php include 'template.php'; ?>
-	<?php if ($params->get('before_body_close')) echo "<!-- before_body_close start -->"."\r\n".$params->get('before_body_close')."\r\n"."<!-- before_body_close end -->"."\r\n"; ?>
-	<jdoc:include type="modules" name="debug" style="none" />
-	<?php if(file_exists($qhtml5_customjs)): ?>
-		<script src="<?php echo $qhtml5_customjs; ?>"></script>
-	<?php endif; ?>
+
+    <?php if ($params->get('browserupgrade') == '1') : ?>
+        <?php if (file_exists(__DIR__ . '/includes/browserupgrade.php')) : ?>
+            <?php include __DIR__ . '/includes/browserupgrade.php'; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <?php include __DIR__ . '/template.php'; ?>
+
+    <?php if ($params->get('before_body_close')) : ?>
+        <?php echo $params->get('before_body_close'); ?>
+    <?php endif; ?>
+
+    <jdoc:include type="modules" name="debug" style="none" />
 </body>
 </html>
+

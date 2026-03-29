@@ -1,0 +1,58 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-asset/1.0/joomla-asset.schema.json",
+  "name": "template.html56k",
+  "version": "6.0.0",
+  "description": "Html56K Template Assets",
+  "assets": [
+    {
+      "name": "template.main",
+      "type": "style",
+      "uri": "css/template.css",
+      "dependencies": [
+        "fontawesome",
+        "bootstrap.css"
+      ]
+    },
+    {
+      "name": "template.responsive",
+      "type": "style",
+      "uri": "css/responsive.css",
+      "dependencies": [
+        "template.main"
+      ]
+    },
+    {
+      "name": "template.js",
+      "type": "script",
+      "uri": "js/template.js",
+      "dependencies": [
+        "bootstrap.js"
+      ],
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "template.plugins",
+      "type": "script",
+      "uri": "js/plugins.js",
+      "dependencies": [
+        "template.js"
+      ],
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "template.custom",
+      "type": "script",
+      "uri": "js/custom.js",
+      "dependencies": [
+        "template.plugins"
+      ],
+      "attributes": {
+        "defer": true
+      }
+    }
+  ]
+}
